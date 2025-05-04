@@ -23,27 +23,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp;
-import diced.bread.todo.model.TodoItem
-import diced.bread.todo.ui.theme.TodoTheme
+import diced.bread.todo.TodoViewModel
+import diced.bread.todo.model.database.TodoItem
 
-class TodoAppUi() {
+class TodoAppUi(val todoList: TodoViewModel) {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun ToDoListApp(modifier: Modifier = Modifier) {
-//        var test = remember { model.todoList }
-
         Scaffold(
             Modifier
                 .fillMaxSize()
@@ -69,8 +64,9 @@ class TodoAppUi() {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-//                        model.add(TodoItem("task ${test.count() + 1}"))
-//                        Log.i("test", test.count().toString())
+                        // Create new Item
+                        Log.i(this.toString(), "adding new item")
+                        todoList.insert(TodoItem(0, "New Todo"))
                     },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -80,7 +76,8 @@ class TodoAppUi() {
             }
 
         ) { innerPadding ->
-
+            val list = todoList.allTasks.observeAsState(listOf())
+            List(list.value, modifier = Modifier.padding(innerPadding))
         }
 
 
@@ -112,24 +109,24 @@ class TodoAppUi() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(item.Title.value, color = MaterialTheme.colorScheme.secondary)
-            Checkbox(item.Complete.value, { item.Complete.value = !item.Complete.value })
+            Text(item.title, color = MaterialTheme.colorScheme.secondary)
+            Checkbox(item.complete, { todoList.update(TodoItem(item.uid, item.title, !item.complete)) })
         }
     }
 
 
-    @Preview(showBackground = true)
-    @Composable
-    private fun TodoPrev() {
-        TodoTheme  {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                TodoAppUi().ToDoListApp()
-            }
-        }
-    }
+//    @Preview(showBackground = true)
+//    @Composable
+//    private fun TodoPrev() {
+//        TodoTheme  {
+//            Surface(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .statusBarsPadding(),
+//                color = MaterialTheme.colorScheme.background
+//            ) {
+//                TodoAppUi(TodoDatabase.getDatabase()).ToDoListApp()
+//            }
+//        }
+//    }
 }
