@@ -1,5 +1,6 @@
 package diced.bread.todo
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,11 +16,17 @@ import androidx.room.Update
 import diced.bread.todo.model.database.TodoDao
 import diced.bread.todo.model.database.TodoDatabase
 import diced.bread.todo.model.database.TodoItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
-    private val _allTasks: LiveData<List<TodoItem>> = todoDao.getAll();
-    val allTasks: LiveData<List<TodoItem>> get() = _allTasks
+    private val _stateFlow = MutableStateFlow(TodoState(list = todoDao.getAll()))
+    val stateFlow get() = _stateFlow.asStateFlow()
+
+//    private val _allTasks: LiveData<List<TodoItem>> = todoDao.getAll();
+//    val allTasks: LiveData<List<TodoItem>> get() = _allTasks
 
     @Insert
     fun insert(item: TodoItem){
@@ -46,3 +53,4 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
         }
     }
 }
+
