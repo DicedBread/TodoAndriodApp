@@ -70,4 +70,9 @@ dependencies {
     // No additional plugins are necessary
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
+    implementation(libs.androidx.navigation.compose)
+
+    // Jetpack Compose Integration
+    implementation(libs.androidx.navigation.compose.v290)
+
 }
